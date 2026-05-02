@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Salah</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap');
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .canvas {
+            width: 100vw; height: 100vh;
+            position: relative;
+            background-color: #fff;
+        }
+
+        .bg-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: fill; z-index: 1; }
+        .blue-shape { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -30%); width: 95vw; max-width: 1000px; z-index: 2; }
+        .cloud-character { position: absolute; top: 2%; left: 50%; transform: translateX(-50%); width: 55vw; max-width: 600px; z-index: 3; }
+
+        .text-container {
+            position: absolute;
+            bottom: 12%;
+            width: 100%;
+            text-align: center;
+            z-index: 4;
+            color: white;
+            text-shadow: 4px 6px 12px rgba(0,0,0,0.3);
+        }
+
+        h1 { font-size: 50px; margin: 0; line-height: 1; }
+        #pesan-bawah { font-size: 40px; margin: 5px 0 0 0; font-weight: bold; }
+
+        .btn-ulang {
+            background-color: #ff6b6b;
+            color: white;
+            font-family: 'Comic Sans MS', cursive; 
+            font-size: 20px;
+            padding: 10px 30px;
+            border-radius: 30px;
+            box-shadow: 0 5px 0 #d64545;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.1s;
+        }
+
+        .btn-ulang:active { transform: translateY(3px); box-shadow: 0 2px 0 #d64545; }
+
+        /* Style untuk hitungan detik */
+        #timer-container {
+            font-size: 24px;
+            margin-top: 20px;
+            background: rgba(0,0,0,0.2);
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="canvas">
+        <img src="assets/images/7.png" class="bg-frame">
+        <img src="assets/images/9.png" class="blue-shape">
+        <img src="assets/images/8.png" class="cloud-character">
+
+        <div class="text-container">
+            <h1>Tidak apa!</h1>
+            <p id="pesan-bawah">Mari kita coba lagi</p>
+            
+            <!-- Tombol Coba Lagi -->
+            <button id="btnCobaLagi" onclick="cobaLagi()" class="btn-ulang" style="display: none;">Coba Lagi</button>
+            
+            <!-- Tempat Hitungan Detik -->
+            <div id="timer-container" style="display: none;">
+                Lanjut dalam <span id="detik">5</span>...
+            </div>
+        </div>
+    </div>
+
+    <audio id="audioSalah" src="assets/audio/tidak apa.mp3"></audio>
+    <!-- Audio untuk Salah Kedua (Kamu Hebat) -->
+    <audio id="audioHebat" src="assets/audio/kamu hebat.mp3"></audio>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const balikKe = urlParams.get('kembali'); 
+    const lanjutKe = urlParams.get('lanjut');   
+
+    window.onload = function() {
+        const pesan = document.getElementById('pesan-bawah');
+        const btn = document.getElementById('btnCobaLagi');
+        const timerCont = document.getElementById('timer-container');
+
+        if (lanjutKe) {
+            // === JIKA SALAH KEDUA KALI (HALAMAN LANJUT) ===
+            pesan.innerText = "kamu hebat, ayo lanjut ";
+            timerCont.style.display = "inline-block";
+            btn.style.display = "none";
+
+            // Putar Audio "Kamu Hebat"
+            const suaraHebat = document.getElementById('audioHebat');
+            if (suaraHebat) {
+                suaraHebat.play().catch(e => console.log("Autoplay dicegah"));
+            }
+
+            let waktu = 5;
+            const hitungMundur = setInterval(() => {
+                waktu--;
+                document.getElementById('detik').innerText = waktu;
+                if (waktu <= 0) {
+                    clearInterval(hitungMundur);
+                    window.location.href = lanjutKe;
+                }
+            }, 1000);
+
+        } else if (balikKe) {
+            // === JIKA SALAH PERTAMA KALI (HALAMAN COBA LAGI) ===
+            pesan.innerText = "Mari kita coba lagi";
+            btn.style.display = "inline-flex";
+            timerCont.style.display = "none";
+
+            // Putar Audio "Tidak Apa / Coba Lagi"
+            const suaraSalah = document.getElementById('audioSalah');
+            if (suaraSalah) {
+                suaraSalah.play().catch(e => console.log("Autoplay dicegah"));
+            }
+        }
+    };
+
+    function cobaLagi() {
+        if (balikKe) {
+            window.location.href = balikKe;
+        } else {
+            window.location.href = "pilih_tema.html";
+        }
+    }
+</script>
+</body>
+</html>

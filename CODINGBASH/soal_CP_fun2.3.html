@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Buah Pisang</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
+
+        body {
+            margin: 0; padding: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh;
+            background-color: #fcfce8;
+            font-family: 'Fredoka', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .logo {
+            position: absolute;
+            top: 10px; right: 5px;
+            width: 110px; height: auto;
+        }
+
+        h1 { color: #5d4037; font-size: 32px; margin-bottom: 20px; line-height: 1.2; }
+
+        .image-frame {
+            position: relative;
+            display: inline-block;
+            border: 10px solid white;
+            border-radius: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+
+        .main-img { width: 100%; max-width: 500px; border-radius: 20px; display: block; }
+
+        .speaker-main {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 45px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            width: 240px;
+            padding: 15px 20px;
+            border-radius: 25px;
+            border: none;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.15);
+            color: white;
+        }
+
+        /* Warna Kotak */
+        .btn-purple { background-color: #e53935 }
+        .btn-yellow { background-color: #ffca28; }
+
+        .speaker-black { width: 32px; height: auto; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="assets/images/logo.png" class="logo">
+        <h1>Saat kita makan buah pisang yang enak,<br>apa warna kulitnya?</h1>
+
+        <div class="image-frame">
+            <img src="assets/images/soal CP Fun 2.3.jpg" class="main-img">
+            <img src="assets/images/speaker putih.png" class="speaker-main" onclick="putarSuara('audioSoal', event)">
+        </div>
+
+        <div class="options">
+            <button class="btn btn-purple" onclick="cekJawaban(false)">
+                Ungu
+                <img src="assets/images/speaker hitam (1).png" class="speaker-black" onclick="putarSuara('audioSalah', event)">
+            </button>
+
+            <button class="btn btn-yellow" onclick="cekJawaban(true)">
+                Kuning
+                <img src="assets/images/speaker hitam (1).png" class="speaker-black" onclick="putarSuara('audioBenar', event)">
+            </button>
+        </div>
+    </div>
+
+    <audio id="audioSoal" src="assets/audio/fun/soal2.6.mp3"></audio>
+    <audio id="audioBenar" src="assets/audio/fun/jawaban2.6.mp3"></audio>
+    <audio id="audioSalah" src="assets/audio/fun/jawaban2.6 (2).mp3"></audio>
+
+   <script>
+    // Mainkan soal otomatis pas masuk
+    window.onload = function() {
+        document.getElementById('audioSoal').play();
+    };
+
+    function putarSuara(id, event) {
+        event.stopPropagation(); 
+        const suara = document.getElementById(id);
+        suara.currentTime = 0;
+        suara.play();
+    }
+
+   function cekJawaban(isBenar) {
+    const soalSekarang = "soal_CP_fun2.3.html"; // Sesuaikan nama filenya
+    const soalBerikutnya = "selamat.html"; // Sesuaikan tujuannya
+
+    if (isBenar) {
+        sessionStorage.removeItem('sudahSalah_' + soalSekarang);
+        
+        // --- INI KODE PENAMBAH SKOR ---
+        let skorSekarang = parseInt(localStorage.getItem('totalBintang')) || 0;
+        localStorage.setItem('totalBintang', skorSekarang + 1);
+        // ------------------------------
+
+        window.location.href = "jika_benar.html?lanjut=" + soalBerikutnya;
+    } else {
+        let pernahSalah = sessionStorage.getItem('sudahSalah_' + soalSekarang);
+        if (pernahSalah) {
+            sessionStorage.removeItem('sudahSalah_' + soalSekarang);
+            window.location.href = "jika_salah.html?lanjut=" + soalBerikutnya;
+        } else {
+            sessionStorage.setItem('sudahSalah_' + soalSekarang, "true");
+            window.location.href = "jika_salah.html?kembali=" + soalSekarang;
+        }
+    }
+}
+</script>
+</body>
+</html>

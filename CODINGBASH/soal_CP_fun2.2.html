@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Jerapah - BISH</title>
+    <style>
+        /* Menggunakan font Fredoka yang bulat dan ramah anak */
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #fcfce8; /* Warna krem background */
+            font-family: 'Fredoka', sans-serif;
+            overflow-x: hidden; /* Mencegah scrollbar horizontal jika logo mepet */
+        }
+
+        .main-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            padding: 50px 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- STYLING LOGO BISH (Diperbesar & Di Kanan) --- */
+        .logo-bish {
+            position: absolute;
+            top: 20px;
+            right: 15px;      /* Posisi merapat ke kanan, sesuaikan jika kurang mepet */
+            width: 110px;     /* Ukuran besar sesuai permintaan sebelumnya */
+            height: auto;
+            z-index: 10;
+        }
+
+        /* Teks Soal */
+        .question-text {
+            color: #333;
+            font-size: 30px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.3;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Frame Gambar Utama */
+        .image-frame {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 40px;
+        }
+
+        .main-img {
+            width: 100%;
+            max-width: 550px; /* Ukuran frame gambar jerapah */
+            border-radius: 35px; /* Sisi melengkung halus */
+            box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+            display: block;
+        }
+
+        /* Icon Speaker Putih di gambar */
+        .speaker-overlay {
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            width: 30px;
+            height: auto;
+            cursor: pointer;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); /* Agar ikon putih lebih jelas */
+        }
+
+        /* --- STYLING TOMBOL JAWABAN (Font Disamakan) --- */
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap; /* Agar responsif di HP */
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* Jarak antara teks dan ikon speaker */
+            padding: 18px 30px;
+            width: 220px;
+            border: none;
+            border-radius: 18px;
+            
+            /* BAGIAN PENTING: Menyamakan font dengan soal */
+            font-family: 'Fredoka', sans-serif;
+            font-size: 30px; /* Ukuran teks jawaban besar */
+            font-weight: 600;
+            
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.1);
+            transition: all 0.1s ease-in-out;
+        }
+
+        /* Efek saat tombol ditekan */
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+
+        /* Warna spesifik tombol */
+        .btn-jerp {
+        background-color: #e53935;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 6px 0 #e68a00;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    /* Warna Tombol Kucing (SALAH) */
+    .btn-kucing {
+        background-color: #ffca28; /* Kuning Cerah */
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 6px 0 #f5b000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+        /* Ikon Speaker Hitam di dalam tombol */
+        .btn-speaker {
+            width: 26px;
+            height: auto;
+        }
+
+        /* Hiasan lengkung di pojok kiri bawah (opsional, perlu aset SVG/Image) */
+        .decoration-bottom {
+            position: fixed;
+            bottom: -50px;
+            left: -50px;
+            width: 200px;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <img src="assets/images/logo.png" alt="Logo BASH" class="logo-bish">
+
+        <h1 class="question-text">
+            Hewan apa yang punya leher sangat panjang<br>dan suka makan daun di pohon yang tinggi?
+        </h1>
+
+
+    
+    <audio id="audioSoal" src="assets/audio/fun/soal2.5.mp3"></audio>
+    <audio id="audioBenar" src="assets/audio/fun/jawaban2.5.mp3"></audio>
+    <audio id="audioSalah" src="assets/audio/fun/jawaban2.5 (2).mp3"></audio>
+
+<script>
+    // Mainkan soal otomatis pas masuk
+    window.onload = function() {
+        document.getElementById('audioSoal').play();
+    };
+
+    function putarSuara(id, event) {
+        event.stopPropagation(); 
+        const suara = document.getElementById(id);
+        suara.currentTime = 0;
+        suara.play();
+    }
+
+    function cekJawaban(isBenar) {
+    const soalSekarang = "soal_CP_fun2.2.html"; // Sesuaikan nama filenya
+    const soalBerikutnya = "soal_CP_fun2.3.html"; // Sesuaikan tujuannya
+
+    if (isBenar) {
+        sessionStorage.removeItem('sudahSalah_' + soalSekarang);
+        
+        // --- INI KODE PENAMBAH SKOR ---
+        let skorSekarang = parseInt(localStorage.getItem('totalBintang')) || 0;
+        localStorage.setItem('totalBintang', skorSekarang + 1);
+        // ------------------------------
+
+        window.location.href = "jika_benar.html?lanjut=" + soalBerikutnya;
+    } else {
+        let pernahSalah = sessionStorage.getItem('sudahSalah_' + soalSekarang);
+        if (pernahSalah) {
+            sessionStorage.removeItem('sudahSalah_' + soalSekarang);
+            window.location.href = "jika_salah.html?lanjut=" + soalBerikutnya;
+        } else {
+            sessionStorage.setItem('sudahSalah_' + soalSekarang, "true");
+            window.location.href = "jika_salah.html?kembali=" + soalSekarang;
+        }
+    }
+}
+</script>
+
+
+<div class="image-frame" style="position: relative; display: inline-block;">
+    <img src="assets/images/soal CP Fun 2.2.jpg" alt="Jerapah" class="main-img">
+    <img src="assets/images/speaker putih.png" 
+         class="speaker-overlay" 
+         style="position: absolute; bottom: 10px; right: 10px; width: 40px; cursor: pointer;" 
+         onclick="putarSuara('audioSoal', event)">
+</div>
+
+<div class="options-container">
+    <button class="btn btn-jerp" onclick="cekJawaban(true)">
+        Jerapah
+        <img src="assets/images/speaker hitam (1).png" alt="Sound" onclick="putarSuara('audioBenar', event)">
+    </button>
+
+    <button class="btn btn-kucing" onclick="cekJawaban(false)">
+        Kucing
+        <img src="assets/images/speaker hitam (1).png" alt="Sound" onclick="putarSuara('audioSalah', event)">
+    </button>
+</div>
+
+</body>
+</html>

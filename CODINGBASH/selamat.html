@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Selamat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* RESET */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Mali', cursive;
+    }
+
+    body {
+      background: #FFFEEE;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ================= TEXT ================= */
+    .content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding-top: 40px;
+    }
+
+    h1 {
+      font-size: clamp(60px, 10vw, 90px);
+      color: #f4a62a;
+      text-shadow: 3px 3px 0 #fff, 6px 6px 0 rgba(0,0,0,0.1);
+    }
+
+    p {
+      font-size: clamp(25px, 5vw, 40px);
+      color: #4c4c9d;
+      margin-bottom: 10px;
+    }
+
+    #skor-teks {
+      font-size: 50px;
+      font-weight: bold;
+      color: #f72585;
+      margin-top: 10px;
+    }
+
+   /* AREA BINTANG */
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 50px;
+    }
+
+    /* Kotak pembungkus (Sekarang ini yang memantul) */
+    .star-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      /* Animasi bouncing dipindah ke sini agar bayangan & warna gerak bareng */
+      animation: bounce 3s ease-in-out infinite;
+    }
+
+    /* Hilangkan animasi bounce dari .star-img agar tidak memantul dua kali */
+    .star-img, .star-bg {
+      width: 200px;
+      height: 200px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .star-bg {
+      opacity: 0.2; /* Bintang bayangan di belakang */
+      z-index: 1;
+    }
+
+    .star-img {
+      z-index: 2;
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+      /* Awalnya kosong, diisi lewat JavaScript */
+      clip-path: inset(0 100% 0 0); 
+      transition: clip-path 1.5s ease-in-out;
+    }
+
+    /* Animasi memantul pelan */
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+/* ================= RUMPUT (DITURUNKAN) ================= */
+    .grass {
+      position: absolute;
+      /* Nilai bottom diubah menjadi lebih rendah agar tidak menutupi bintang */
+      bottom: -60px; 
+      width: 400px;  /* Ukuran disesuaikan agar proporsional */
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .grass.left { 
+      left: -20px; 
+    }
+
+    .grass.right { 
+      right: -20px; 
+      transform: scaleX(-1); /* Membalik gambar agar variatif */
+    }
+
+    /* ================= ANIMASI BINTANG (LEBIH PELAN) ================= */
+    .star img {
+      width: 200px;
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+      /* Durasi diubah jadi 3 detik agar gerakannya tenang/slow */
+      animation: bounce 3s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); } /* Pantulan tidak terlalu tinggi */
+    }
+
+    /* ================= DEKORASI ================= */
+    .sun { position: absolute; width: 130px; top: 20px; right: 40px; z-index: 2; }
+    .cloud { position: absolute; z-index: 1; opacity: 0.8; animation: float 6s ease-in-out infinite; }
+    .c1 { width: 180px; top: 30px; left: 5%; }
+    .c2 { width: 140px; top: 120px; left: 20%; animation-delay: 1s; }
+    .c3 { width: 200px; top: 40px; right: 8%; animation-delay: 0.5s; }
+
+    @keyframes float { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(25px); } }
+
+    /* KONFETI */
+    .confetti-container { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 5; }
+    .confetti { position: absolute; width: 12px; height: 12px; animation: fall 4s linear infinite; }
+    @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <img src="assets/images/sun.png" class="sun" alt="Matahari">
+  <img src="assets/images/cloud.png" class="cloud c1" alt="Awan">
+  <img src="assets/images/cloud.png" class="cloud c2" alt="Awan">
+  <img src="assets/images/cloud.png" class="cloud c3" alt="Awan">
+
+  <div class="content">
+    <h1>Selamat!</h1>
+    <p>Kamu berhasil menjawab <span id="soal-benar">0</span> dari 6 soal</p>
+    <div id="skor-teks">SKOR: 0</div>
+
+    <div class="stars">
+      <!-- Bintang 1 -->
+      <div class="star-container">
+        <img src="assets/images/star.png" class="star-bg">
+        <img src="assets/images/star.png" class="star-img" id="star-1">
+      </div>
+      <!-- Bintang 2 -->
+      <div class="star-container">
+        <img src="assets/images/star.png" class="star-bg">
+        <img src="assets/images/star.png" class="star-img" id="star-2">
+      </div>
+      <!-- Bintang 3 -->
+      <div class="star-container">
+        <img src="assets/images/star.png" class="star-bg">
+        <img src="assets/images/star.png" class="star-img" id="star-3">
+      </div>
+    </div>
+
+  <img src="assets/images/rumput.png" class="grass left" alt="Rumput">
+  <img src="assets/images/rumput.png" class="grass right" alt="Rumput">
+
+  <div class="confetti-container" id="confetti-box"></div>
+</div>
+
+<script>
+  window.onload = function() {
+    // 1. Ambil data skor dari memori browser
+    let totalBenar = parseInt(localStorage.getItem('totalBintang')) || 0;
+    if(totalBenar > 6) totalBenar = 6;
+
+    // 2. Update Teks Skor (1 poin = 2 nilai)
+    document.getElementById('soal-benar').innerText = totalBenar;
+    document.getElementById('skor-teks').innerText = "SKOR: " + (totalBenar * 2);
+
+    // 3. Logika Bintang (Mengisi berdasarkan jumlah benar)
+    setTimeout(() => {
+      for (let i = 1; i <= 3; i++) {
+        let star = document.getElementById('star-' + i);
+        let targetPoin = i * 2; 
+
+        if (totalBenar >= targetPoin) {
+          // Jika benar mencapai target (2, 4, 6), bintang penuh
+          star.style.clipPath = "inset(0 0 0 0)";
+        } else if (totalBenar === targetPoin - 1) {
+          // Jika benar ganjil (1, 3, 5), bintang setengah
+          star.style.clipPath = "inset(0 50% 0 0)";
+        } else {
+          // Sisanya kosong
+          star.style.clipPath = "inset(0 100% 0 0)";
+        }
+      }
+    }, 500);
+
+    // ... (masukkan kode konfeti kamu di sini) ...
+  };
+    // 4. Munculkan Konfeti Otomatis
+    const container = document.getElementById('confetti-box');
+    const warna = ['#ff6b6b', '#4d96ff', '#6bcB77', '#ffd93d', '#f72585'];
+    
+    for (let i = 0; i < 30; i++) {
+      let div = document.createElement('div');
+      div.className = 'confetti';
+      div.style.left = Math.random() * 100 + "%";
+      div.style.backgroundColor = warna[Math.floor(Math.random() * warna.length)];
+      div.style.animationDelay = Math.random() * 3 + "s";
+      container.appendChild(div);
+    }
+
+</script>
+
+</body>
+</html>

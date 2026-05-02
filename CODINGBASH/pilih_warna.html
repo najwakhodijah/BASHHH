@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pilih Karakter Favoritmu!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #f5f0e8;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== PAGE 1: CHARACTER SELECTION ===== */
+    #page1 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 30px 20px 40px;
+      background: #f5f0e8;
+      position: relative;
+    }
+
+    /* Corner animals */
+    .corner-animal {
+      position: absolute;
+      width: 110px;
+      font-size: 90px;
+      line-height: 1;
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.15));
+    }
+    .corner-animal.top-left  { top: 18px; left: 20px; }
+    .corner-animal.top-right { top: 18px; right: 20px; }
+    .corner-animal.bottom-right { bottom: 10px; right: 10px; font-size: 75px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+
+    /* Title */
+    .title-box {
+      margin: 10px 0 32px;
+      text-align: center;
+    }
+    .title-box h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2.8rem;
+      color: #3a30c8;
+      letter-spacing: 2px;
+      line-height: 1.2;
+      text-shadow: 3px 3px 0 rgba(58,48,200,0.12);
+    }
+
+    /* Characters grid */
+    .characters-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 28px 36px;
+      max-width: 780px;
+      width: 100%;
+      margin-bottom: 36px;
+    }
+
+    .character-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.18s ease;
+    }
+    .character-item:hover { transform: scale(1.08); }
+    .character-item:active { transform: scale(0.96); }
+
+    .char-circle {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 5px solid transparent;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.13);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      position: relative;
+    }
+
+    .character-item.selected .char-circle {
+      border-color: #ffd700;
+      box-shadow: 0 0 0 5px #ffd700, 0 8px 24px rgba(0,0,0,0.2);
+      transform: scale(1.08);
+    }
+
+    /* Checkmark overlay */
+    .char-circle::after {
+      content: '✓';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: white;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.22);
+    }
+    .character-item.selected .char-circle::after { opacity: 1; }
+
+    .char-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.15rem;
+      color: #333;
+      letter-spacing: 1px;
+      font-style: italic;
+    }
+
+    /* Colors matching the image */
+    .color-zya    { background: #b05a6b; }
+    .color-zidni  { background: #4caf6a; }
+    .color-celine { background: #a09848; }
+    .color-alesya { background: #5a6bc4; }
+    .color-shofwa { background: #b07ec8; }
+    .color-malik  { background: #7a6875; }
+    .color-faqih  { background: #3bb8c8; }
+
+    /* Start button */
+    .start-btn {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: white;
+      background: linear-gradient(135deg, #ff7c2a 0%, #ff4e00 100%);
+      border: none;
+      border-radius: 50px;
+      padding: 16px 60px;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #c03500, 0 10px 24px rgba(255,78,0,0.3);
+      transition: transform 0.12s, box-shadow 0.12s;
+      position: relative;
+      display: none; /* hidden until character selected */
+    }
+    .start-btn.visible { display: inline-block; }
+    .start-btn:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #c03500, 0 14px 28px rgba(255,78,0,0.35); }
+    .start-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 #c03500, 0 6px 16px rgba(255,78,0,0.2); }
+
+    /* Selection hint */
+    .hint-text {
+      font-size: 1rem;
+      color: #888;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+
+    /* ===== PAGE 2: GAME / NEXT PAGE ===== */
+    #page2 {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(160deg, #d4f0ff 0%, #fffbe0 60%, #ffd6f6 100%);
+      padding: 40px 20px;
+      text-align: center;
+    }
+    #page2.show { display: flex; }
+    #page2 .welcome-emoji {
+      font-size: 6rem;
+      margin-bottom: 16px;
+      animation: bounce 1s infinite alternate;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-18px); }
+    }
+    #page2 h2 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2.2rem;
+      color: #3a30c8;
+      margin-bottom: 12px;
+    }
+    #page2 p {
+      font-size: 1.2rem;
+      color: #555;
+      max-width: 420px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    #page2 .char-preview {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 8px solid #ffd700;
+      box-shadow: 0 0 0 6px white, 0 10px 40px rgba(0,0,0,0.18);
+      margin-bottom: 28px;
+      transition: background 0.3s;
+    }
+    .back-btn {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.1rem;
+      color: white;
+      background: linear-gradient(135deg, #5a6bc4 0%, #3a30c8 100%);
+      border: none;
+      border-radius: 50px;
+      padding: 12px 40px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #2a22a0, 0 8px 20px rgba(58,48,200,0.25);
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .back-btn:hover { transform: translateY(-2px); }
+    .back-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2a22a0; }
+
+    /* stars decoration */
+    .stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .star {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: floatStar 1.2s ease-out forwards;
+      opacity: 1;
+    }
+    @keyframes floatStar {
+      0%   { transform: scale(0) rotate(0deg); opacity: 1; }
+      60%  { transform: scale(1.3) rotate(180deg); opacity: 1; }
+      100% { transform: scale(0.8) translateY(-80px) rotate(360deg); opacity: 0; }
+    }
+
+    /* Page transition */
+    .page-fade-out { animation: fadeOut 0.4s ease forwards; }
+    .page-fade-in  { animation: fadeIn  0.5s ease forwards; }
+    @keyframes fadeOut { to { opacity: 0; transform: scale(0.96); } }
+    @keyframes fadeIn  { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+  </style>
+</head>
+<body>
+
+<!-- ======== PAGE 1 ======== -->
+<div id="page1">
+
+  <!-- Corner Animals (emoji-based, matching image style) -->
+  <div class="corner-animal top-left">🦁</div>
+  <div class="corner-animal top-right">🦓</div>
+
+
+  <!-- Title -->
+  <div class="title-box">
+    <h1>PILIH<br>WARNA FAVORITMU!</h1>
+  </div>
+
+  <!-- Characters -->
+  <div class="characters-grid" id="charGrid">
+    <div class="character-item" data-name="ZYA" data-color="#b05a6b" onclick="selectChar(this)">
+      <div class="char-circle color-zya"></div>
+      <span class="char-name">ZYA</span>
+    </div>
+    <div class="character-item" data-name="ZIDNI" data-color="#4caf6a" onclick="selectChar(this)">
+      <div class="char-circle color-zidni"></div>
+      <span class="char-name">ZIDNI</span>
+    </div>
+    <div class="character-item" data-name="CELINE" data-color="#a09848" onclick="selectChar(this)">
+      <div class="char-circle color-celine"></div>
+      <span class="char-name">CELINE</span>
+    </div>
+    <div class="character-item" data-name="ALESYA" data-color="#5a6bc4" onclick="selectChar(this)">
+      <div class="char-circle color-alesya"></div>
+      <span class="char-name">ALESYA</span>
+    </div>
+    <div class="character-item" data-name="SHOFWA" data-color="#b07ec8" onclick="selectChar(this)">
+      <div class="char-circle color-shofwa"></div>
+      <span class="char-name">SHOFWA</span>
+    </div>
+    <div class="character-item" data-name="MALIK" data-color="#7a6875" onclick="selectChar(this)">
+      <div class="char-circle color-malik"></div>
+      <span class="char-name">MALIK</span>
+    </div>
+    <div class="character-item" data-name="FAQIH" data-color="#3bb8c8" onclick="selectChar(this)">
+      <div class="char-circle color-faqih"></div>
+      <span class="char-name">FAQIH</span>
+    </div>
+  </div>
+
+  <p class="hint-text" id="hintText">👆 Klik karakter pilihanmu!</p>
+  <button class="start-btn" id="startBtn" onclick="goToPage2()">✨ MULAI! ✨</button>
+</div>
+
+<!-- Stars container -->
+<div class="stars" id="starsContainer"></div>
+
+<!-- ======== PAGE 2 ======== -->
+<div id="page2">
+  <div class="welcome-emoji" id="welcomeEmoji">🎉</div>
+  <div class="char-preview" id="charPreview"></div>
+  <h2 id="welcomeTitle">Halo, KARAKTER!</h2>
+  <p>Selamat datang di petualangan seru! Bersiaplah untuk bermain dan belajar hal baru bersama teman-teman! 🌟</p>
+  <button class="back-btn" onclick="goBack()">← Kembali Pilih Karakter</button>
+</div>
+
+<script>
+  let selectedChar = null;
+
+  function selectChar(el) {
+    // Deselect previous
+    document.querySelectorAll('.character-item').forEach(c => c.classList.remove('selected'));
+    // Select current
+    el.classList.add('selected');
+    selectedChar = { name: el.dataset.name, color: el.dataset.color };
+
+    // Show start button
+    const btn = document.getElementById('startBtn');
+    btn.classList.add('visible');
+    document.getElementById('hintText').textContent = '🌟 Karakter dipilih: ' + selectedChar.name + '!';
+
+    // Spawn stars
+    spawnStars(el);
+  }
+
+  function spawnStars(el) {
+    const container = document.getElementById('starsContainer');
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const emojis = ['⭐','✨','🌟','💛','🎉'];
+
+    for (let i = 0; i < 8; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      const angle = (i / 8) * 360;
+      const dist = 40 + Math.random() * 40;
+      const x = cx + Math.cos(angle * Math.PI / 180) * dist - 12;
+      const y = cy + Math.sin(angle * Math.PI / 180) * dist - 12;
+      star.style.left = x + 'px';
+      star.style.top  = y + 'px';
+      star.style.animationDelay = (i * 0.07) + 's';
+      container.appendChild(star);
+      setTimeout(() => star.remove(), 1400);
+    }
+  }
+
+  function goToPage2() {
+    if (!selectedChar) return;
+
+    const page1 = document.getElementById('page1');
+    page1.classList.add('page-fade-out');
+
+    // Simpan data pemain yang dipilih agar halaman selanjutnya tahu siapa yang main
+    localStorage.setItem('playerAktif', JSON.stringify(selectedChar));
+
+    setTimeout(() => {
+      // Sesuai alur poin 5: Pindah ke halaman Pilih Tema
+      window.location.href = "pilih_tema.html";
+    }, 380);
+  }
+</script>
+</body>
+</html>

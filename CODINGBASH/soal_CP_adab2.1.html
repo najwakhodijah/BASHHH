@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Stroberi</title>
+    <style>
+        /* Menggunakan font yang bulat/friendly agar mirip dengan gambar */
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4e4; /* Warna krem background */
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        /* Logo di pojok kanan atas */
+        .logo {
+           position: absolute;
+            top: 15px;    /* Sedikit diturunkan agar tidak terlalu mepet atas */
+            right: 5px;  /* Sedikit digeser dari pinggir */
+            width: 110px; /* Ukuran sebelumnya 60px, sekarang 100px agar lebih menonjol */
+            height: auto; /* Menjaga rasio logo agar tidak penyet */
+            z-index: 10;  /* Memastikan logo berada di lapisan paling atas */
+        }
+
+        h1 {
+            color: #2c2c2c;
+            font-size: 30px;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        /* Frame Gambar Utama */
+       .image-frame {
+        position: relative; /* Ini wajib ada supaya speaker nempel di sini */
+        display: inline-block;
+        width: 500px; /* Sesuaikan dengan ukuran gambar kamu */
+        margin: 20px auto;
+    }
+
+    .main-img {
+        width: 100%;
+        border-radius: 20px;
+        display: block;
+    }
+
+    .speaker-overlay {
+        position: absolute;
+        bottom: 10px;    /* Jarak dari bawah gambar */
+        right: 10px;     /* Jarak dari kanan gambar */
+        width: 40px;     /* Ukuran speaker */
+        cursor: pointer;
+        z-index: 5;
+        }
+
+        /* Layout Tombol Jawaban */
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+       .btn {
+            display: flex;
+            align-items: center;
+            /* Mengatur agar teks di kiri dan ikon di kanan dengan jarak otomatis */
+            justify-content: space-between; 
+            gap: 15px;
+            padding: 15px 25px;
+            /* Lebar tombol ditambah agar teks tidak terlalu mepet */
+            width: 320px; 
+            min-height: 120px;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif; 
+            font-size: 24px; /* Sedikit dikecilkan agar muat 3 baris */
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.15);
+            transition: all 0.1s;
+            text-align: left; /* Teks rata kiri */
+        }
+
+        /* Mengatur agar teks memiliki spasi antar baris yang rapi */
+        .btn span {
+            line-height: 1.2;
+            flex: 1;
+        }
+
+        .btn img {
+            width: 35px; /* Ukuran speaker disesuaikan */
+            height: auto;
+        }
+
+/* Efek saat tombol ditekan (biar makin interaktif) */
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.15);
+        }
+
+        .btn-merah {
+            background-color: #e53935;
+        }
+
+        .btn-putih {
+            background-color: #ffca28; /* Warna kuning sesuai gambar */
+        }
+
+        .btn img {
+            width: 24px;
+        }
+
+        /* Hiasan lengkung di pojok kiri bawah (opsional menggunakan SVG/Image) */
+        .decoration-left {
+            position: absolute;
+            bottom: -20px;
+            left: -40px;
+            width: 150px;
+            z-index: -1;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="assets/images/logo.png" alt="Logo" class="logo">
+
+        <h1>Apa perasaanmu kalau teman meminjam <br>barangmu dan menjaganya dengan baik?</h1>
+
+       <div class="image-frame">
+    <img src="assets/images/soal CP adab 2.1.png" alt="adab" class="main-img">
+    
+    <img src="assets/images/speaker putih.png" 
+         alt="Play" 
+         class="speaker-overlay" 
+         onclick="putarSuara('audioSoal', event)">
+</div>
+
+        <div class="options-container">
+            <button class="btn btn-merah" onclick="cekJawaban(true)">
+             <span>Senang dan mau<br>meminjamkannya lagi</span>
+            <img src="assets/images/speaker hitam (1).png" onclick="putarSuara('audioBenar', event)">
+            </button>
+
+            <button class="btn btn-putih" onclick="cekJawaban(false)">
+            <span>Marah dan<br>sedih</span>
+            <img src="assets/images/speaker hitam (1).png" onclick="putarSuara('audioSalah', event)">
+            </button>
+        </div>
+
+        <audio id="audioSoal" src="assets/audio/adab/soal1.4.mp3"></audio>
+        <audio id="audioBenar" src="assets/audio/adab/jawaban1.4 (2).mp3"></audio>
+        <audio id="audioSalah" src="assets/audio/adab/jawaban1.4.mp3"></audio>
+    </div>
+
+<script>
+    // Mainkan soal otomatis pas masuk
+    window.onload = function() {
+        document.getElementById('audioSoal').play();
+    };
+
+    function putarSuara(id, event) {
+        event.stopPropagation(); 
+        const suara = document.getElementById(id);
+        suara.currentTime = 0;
+        suara.play();
+    }
+
+   function cekJawaban(isBenar) {
+    const soalSekarang = "soal_CP_adab2.1.html"; // Sesuaikan nama filenya
+    const soalBerikutnya = "soal_CP_adab2.2.html"; // Sesuaikan tujuannya
+
+    if (isBenar) {
+        sessionStorage.removeItem('sudahSalah_' + soalSekarang);
+        
+        // --- INI KODE PENAMBAH SKOR ---
+        let skorSekarang = parseInt(localStorage.getItem('totalBintang')) || 0;
+        localStorage.setItem('totalBintang', skorSekarang + 1);
+        // ------------------------------
+
+        window.location.href = "jika_benar.html?lanjut=" + soalBerikutnya;
+    } else {
+        let pernahSalah = sessionStorage.getItem('sudahSalah_' + soalSekarang);
+        if (pernahSalah) {
+            sessionStorage.removeItem('sudahSalah_' + soalSekarang);
+            window.location.href = "jika_salah.html?lanjut=" + soalBerikutnya;
+        } else {
+            sessionStorage.setItem('sudahSalah_' + soalSekarang, "true");
+            window.location.href = "jika_salah.html?kembali=" + soalSekarang;
+        }
+    }
+}
+</script>
+</body>
+</html>
